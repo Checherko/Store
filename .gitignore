@@ -1,65 +1,23 @@
-# Byte-compiled / optimized / DLL files
+*.pyc
 __pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Django stuff:
-*.log
-local_settings.py
+*.sqlite3
 db.sqlite3
-
-# Environments
+media/
 .env
 .venv
-env/
 venv/
-ENV/
-env.bak/
-venv.bak/
-.pythonlibs/
-
-# IDE
+env/
+.DS_Store
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
 .idea/
 .vscode/
 *.swp
 *.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Replit
+*~
+.pythonlibs/
 .upm/
