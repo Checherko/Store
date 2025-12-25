@@ -21,7 +21,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = {'category': ['exact']}
+    filterset_fields = {'category': ['exact'], 'seller': ['exact']}
     search_fields = ['name', 'description']
     ordering_fields = ['sort_index', 'price', 'review_count', 'id']
     ordering = ['-sort_index']
