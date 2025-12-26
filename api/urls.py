@@ -10,4 +10,5 @@ router.register(r'orders', OrderViewSet, basename='order')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('catalog/', ProductViewSet.as_view({'get': 'catalog'}), name='product-catalog'),
 ]

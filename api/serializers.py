@@ -48,6 +48,28 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductListSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'description', 'images', 'category', 'limited_edition']
+        
+    def get_images(self, obj):
+        request = self.context.get('request')
+        if obj.image:
+            return [{
+                'src': request.build_absolute_uri(obj.image.url) if request else obj.image.url,
+                'alt': obj.name
+            }]
+        return []
+        
+    def get_price(self, obj):
+        try:
+            price = obj.prices.latest('created_at')
+            return str(price.value)
+        except:
+            return '0.00'
     price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     review_count = serializers.IntegerField(read_only=True)
     title = serializers.CharField(source='name', read_only=True)

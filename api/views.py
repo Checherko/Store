@@ -18,13 +18,19 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Product.objects.all()
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = {'category': ['exact'], 'seller': ['exact']}
     search_fields = ['name', 'description']
     ordering_fields = ['sort_index', 'price', 'review_count', 'id']
     ordering = ['-sort_index']
+    
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        # Filter by active categories if category filter is not already applied
+        if 'category' not in self.request.query_params:
+            queryset = queryset.filter(category__active=True)
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -66,6 +72,26 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
             rating=rating
         )
         return Response({'message': 'Review added'}, status=status.HTTP_201_CREATED)
+        
+    @action(detail=False, methods=['get'])
+    def catalog(self, request):
+        """
+        Catalog endpoint that supports pagination and filtering
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # Handle pagination
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+            
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'items': serializer.data,
+            'currentPage': 1,
+            'lastPage': 1
+        })
 
 
 class BannerViewSet(viewsets.ReadOnlyModelViewSet):
