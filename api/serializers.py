@@ -50,24 +50,27 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     review_count = serializers.IntegerField(read_only=True)
-    image = serializers.SerializerMethodField()
+    title = serializers.CharField(source='name', read_only=True)
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'image', 'description', 'price', 'review_count']
+        fields = ['id', 'title', 'images', 'description', 'price', 'review_count']
 
-    def get_image(self, obj):
+    def get_images(self, obj):
         if obj.image:
             request = self.context.get('request')
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+            image_url = request.build_absolute_uri(obj.image.url) if request else obj.image.url
+            return [{'src': image_url, 'alt': obj.name}]
+        return []
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     review_count = serializers.IntegerField(read_only=True)
     sales_count = serializers.IntegerField(read_only=True)
-    image = serializers.SerializerMethodField()
+    title = serializers.CharField(source='name', read_only=True)
+    images = serializers.SerializerMethodField()
     reviews = ProductReviewSerializer(many=True, read_only=True)
     characteristics = ProductCharacteristicSerializer(many=True, read_only=True)
     seller = SellerSerializer(read_only=True)
@@ -76,16 +79,17 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'name', 'description', 'image', 'price', 'review_count',
+            'id', 'title', 'description', 'images', 'price', 'review_count',
             'sales_count', 'limited_edition', 'reviews', 'characteristics',
             'seller', 'category'
         ]
 
-    def get_image(self, obj):
+    def get_images(self, obj):
         if obj.image:
             request = self.context.get('request')
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+            image_url = request.build_absolute_uri(obj.image.url) if request else obj.image.url
+            return [{'src': image_url, 'alt': obj.name}]
+        return []
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -107,14 +111,19 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class BannerSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
 
     class Meta:
         model = Banner
-        fields = ['id', 'title', 'image', 'banner_type', 'category']
+        fields = ['id', 'title', 'images', 'banner_type', 'category', 'price']
 
-    def get_image(self, obj):
+    def get_images(self, obj):
         if obj.image:
             request = self.context.get('request')
-            return request.build_absolute_uri(obj.image.url) if request else obj.image.url
-        return None
+            image_url = request.build_absolute_uri(obj.image.url) if request else obj.image.url
+            return [{'src': image_url, 'alt': obj.title}]
+        return []
+    
+    def get_price(self, obj):
+        return '0'
