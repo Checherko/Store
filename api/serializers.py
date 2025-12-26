@@ -50,10 +50,12 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
+    title = serializers.CharField(source='name')
+    review_count = serializers.IntegerField(default=0)
     
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'description', 'images', 'category', 'limited_edition']
+        fields = ['id', 'title', 'description', 'price', 'images', 'review_count', 'category']
         
     def get_images(self, obj):
         request = self.context.get('request')
@@ -62,24 +64,15 @@ class ProductListSerializer(serializers.ModelSerializer):
                 'src': request.build_absolute_uri(obj.image.url) if request else obj.image.url,
                 'alt': obj.name
             }]
-        return []
+        return [{'src': '', 'alt': obj.name}]
         
     def get_price(self, obj):
         try:
             price = obj.prices.latest('created_at')
-            return str(price.value)
-        except:
+            return str(round(float(price.value), 2))
+        except Exception as e:
+            print(f"Error getting price for product {obj.id}: {e}")
             return '0.00'
-    price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    review_count = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(source='name', read_only=True)
-    images = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Product
-        fields = ['id', 'title', 'images', 'description', 'price', 'review_count']
-
-    def get_images(self, obj):
         if obj.image:
             request = self.context.get('request')
             image_url = request.build_absolute_uri(obj.image.url) if request else obj.image.url

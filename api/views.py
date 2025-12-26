@@ -41,13 +41,23 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     def popular(self, request):
         products = Product.objects.all().order_by('-sort_index')[:8]
         serializer = ProductListSerializer(products, many=True, context={'request': request})
-        return Response(serializer.data)
+        return Response({
+            'count': len(serializer.data),
+            'next': None,
+            'previous': None,
+            'results': serializer.data
+        })
 
     @action(detail=False, methods=['get'])
     def limited(self, request):
         products = Product.objects.filter(limited_edition=True)[:16]
         serializer = ProductListSerializer(products, many=True, context={'request': request})
-        return Response(serializer.data)
+        return Response({
+            'count': len(serializer.data),
+            'next': None,
+            'previous': None,
+            'results': serializer.data
+        })
 
     @action(detail=True, methods=['get'])
     def reviews(self, request, pk=None):
@@ -80,17 +90,26 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
         """
         queryset = self.filter_queryset(self.get_queryset())
         
-        # Handle pagination
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-            
-        serializer = self.get_serializer(queryset, many=True)
+        # Get pagination parameters
+        page = int(request.query_params.get('page', 1))
+        limit = int(request.query_params.get('limit', 20))
+        
+        # Manual pagination to match frontend's expected format
+        total = queryset.count()
+        last_page = (total + limit - 1) // limit
+        start = (page - 1) * limit
+        end = start + limit
+        
+        # Get the paginated data
+        paginated_queryset = queryset[start:end]
+        serializer = self.get_serializer(paginated_queryset, many=True, context={'request': request})
+        
+        # Return in the format expected by the frontend
         return Response({
             'items': serializer.data,
-            'currentPage': 1,
-            'lastPage': 1
+            'currentPage': page,
+            'lastPage': last_page if last_page > 0 else 1,
+            'total': total
         })
 
 
