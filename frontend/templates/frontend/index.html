@@ -18,7 +18,7 @@
                 <div class="BannersHomeBlock-content">from &#32;<span class="BannersHomeBlock-price">$ ${ banner.price }$</span>
                 </div>
               </div>
-              <div class="BannersHomeBlock-block" v-if="banner.images.length > 0">
+              <div class="BannersHomeBlock-block" v-if="banner.images && banner.images.length > 0">
                 <div class="BannersHomeBlock-img"><img :src="banner.images[0].src" :alt="banner.images[0].alt"/>
                 </div>
               </div>
@@ -39,14 +39,14 @@
           <div class="Cards">
 
             <!-- Получаем популярные товары -->
-            <div v-for="card in popularCards" class="Card">
+            <div v-for="(card, idx) in popularCards" :key="idx" class="Card">
               <a class="Card-picture" :href="`/product/${card.id}/`">
-                <img v-if="card.images.length > 0" :src="card.images[0].src" :alt="card.images[0].alt"/></a>
+                <img v-if="card && card.images && Array.isArray(card.images) && card.images.length > 0" :src="card.images[0].src" :alt="card.images[0].alt" /></a>
               <div class="Card-content">
-                <strong class="Card-title"><a :href="`/product/${card.id}/`">${ card.title }$</a>
+                <strong class="Card-title"><a :href="`/product/${card.id}/`">${ card.title || 'Product' }$</a>
                 </strong>
                 <div class="Card-description">
-                  <div class="Card-cost"><span class="Card-price">$${ card.price }$</span>
+                  <div class="Card-cost"><span class="Card-price">$${ card.price || '0' }$</span>
                   </div>
                   <div class="Card-hover"><a class="Card-btn" :href="`/product/${card.id}/`">
                     <img src="{% static 'frontend/assets/img/icons/card/cart.svg' %}" alt="cart.svg"/></a>
@@ -143,14 +143,14 @@
 <!--              </div>-->
               <!-- Получаем список товаров ограниченной коллекции -->
             <div class="Cards">
-              <div v-for="card in limitedCards" class="Card">
+              <div v-for="(card, idx) in limitedCards" :key="idx" class="Card">
                 <a class="Card-picture" :href="`/product/${card.id}/`">
-                  <img v-if="card.images.length > 0" :src="card.images[0].src" :alt="card.images[0].alt"/></a>
+                  <img v-if="card && card.images && Array.isArray(card.images) && card.images.length > 0" :src="card.images[0].src" :alt="card.images[0].alt" /></a>
                 <div class="Card-content">
-                  <strong class="Card-title"><a :href="`/product/${card.id}/`">${ card.title }$</a>
+                  <strong class="Card-title"><a :href="`/product/${card.id}/`">${ card.title || 'Product' }$</a>
                   </strong>
                   <div class="Card-description">
-                    <div class="Card-cost"><span class="Card-price">$${ card.price }$</span>
+                    <div class="Card-cost"><span class="Card-price">$${ card.price || '0' }$</span>
                     </div>
                     <div class="Card-hover"><a class="Card-btn" href="#">
                       <img src="{% static 'frontend/assets/img/icons/card/cart.svg' %}" alt="cart.svg"/></a>
