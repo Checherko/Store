@@ -83,9 +83,12 @@ createApp({
                         try {
                                 this.getData("/api/products/popular")
                                         .then(data => {
-                                                this.popularCards = (Array.isArray(data) ? data : (data?.results || []))
+                                                const products = (Array.isArray(data) ? data : (data?.results || []))
                                                         .filter(c => c && typeof c === 'object')
-                                                console.log('✅ Popular products loaded:', this.popularCards.length)
+                                                this.popularCards = products
+                                                this.$nextTick(() => {
+                                                        console.log('✅ Popular products ASSIGNED:', products.length, 'Current this.popularCards:', this.popularCards.length, 'DOM updated:', document.querySelectorAll('.Card').length)
+                                                })
                                         })
                                         .catch((error) => {
                                                 console.log('❌ Popular error:', error)
@@ -98,9 +101,12 @@ createApp({
                         try {
                                 this.getData("/api/products/limited")
                                         .then(data => {
-                                                this.limitedCards = (Array.isArray(data) ? data : (data?.results || []))
+                                                const products = (Array.isArray(data) ? data : (data?.results || []))
                                                         .filter(c => c && typeof c === 'object')
-                                                console.log('✅ Limited products loaded:', this.limitedCards.length)
+                                                this.limitedCards = products
+                                                this.$nextTick(() => {
+                                                        console.log('✅ Limited products ASSIGNED:', products.length, 'Current this.limitedCards:', this.limitedCards.length, 'DOM updated:', document.querySelectorAll('.Card').length)
+                                                })
                                         }).catch((e) => {
                                         this.limitedCards = []
                                         console.warn('❌ Ошибка при получении списка лимитированных товаров')
@@ -235,9 +241,10 @@ createApp({
                 console.log('🚀 App mounted!')
                 this.getCategories()
                 this.getBasket()
-                this.getBanners?.()
-                this.getPopularProducts?.()
-                this.getLimitedProducts?.()
+                this.getBanners()
+                this.getPopularProducts()
+                this.getLimitedProducts()
+                console.log('📊 Initial state:', { popularCards: this.popularCards, limitedCards: this.limitedCards, banners: this.banners })
                 // this.getLastOrder()
         },
 }).mount('#site')

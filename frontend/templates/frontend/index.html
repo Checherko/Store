@@ -36,7 +36,7 @@
             <h2 class="Section-title">Popular Products
             </h2>
           </header>
-          <div class="Cards">
+          <div class="Cards" style="display: flex !important; flex-wrap: wrap !important; justify-content: center !important; width: 100% !important;">
 
             <!-- Получаем популярные товары -->
             <div v-for="(card, idx) in popularCards" :key="idx" class="Card">
@@ -142,7 +142,7 @@
 <!--                </div>-->
 <!--              </div>-->
               <!-- Получаем список товаров ограниченной коллекции -->
-            <div class="Cards">
+            <div class="Cards" style="display: flex !important; flex-wrap: wrap !important; justify-content: center !important; width: 100% !important;">
               <div v-for="(card, idx) in limitedCards" :key="idx" class="Card">
                 <a class="Card-picture" :href="`/product/${card.id}/`">
                   <img v-if="card && card.images && Array.isArray(card.images) && card.images.length > 0" :src="card.images[0].src" :alt="card.images[0].alt" /></a>
